@@ -37,8 +37,7 @@ Future<Response> _companiesHandler(Request request, String requestId) async {
         }),
         headers: {'content-type': 'application/json'});
   } catch (ex) {
-    print('Error handling request for requestId: $requestId, error: $ex');
-    return Response.notFound('{"error":"not_found","error_description":"The requested resource was not found on the backend service"}',
-        headers: {'content-type': 'application/json'});
+    print('Error handling request for id: $requestId, error: $ex');
+    return Response.notFound('{"error":"not_found","error_description":"The requested resource was not found"}', headers: {'content-type': 'application/json'});
   }
 }
