@@ -22,33 +22,23 @@ void main() async {
 
 Future<Response> _companiesHandler(Request request, String requestId) async {
   final url = Uri.parse('$backendUrl/$requestId.xml');
-
-  http.Response backendResponse;
   try {
-    backendResponse = await http.get(url);
+    final backendResponse = await http.get(url);
+
+    if (backendResponse.statusCode != 200) throw Exception('Backend responded with status code: ${backendResponse.statusCode}');
+
+    final doc = XmlDocument.parse(backendResponse.body);
+
+    return Response.ok(
+        JsonEncoder.withIndent(' ').convert({
+          'id': doc.xpath('/Data/id').first.innerText,
+          'name': doc.xpath('/Data/name').first.innerText,
+          'description': doc.xpath('/Data/description').first.innerText,
+        }),
+        headers: {'content-type': 'application/json'});
   } catch (ex) {
-    print('Error retrieving xml from backend service: $url, error: $ex');
-    return Response.notFound('Not Found');
-  }
-
-  if (backendResponse.statusCode != 200) {
-    print('Failed to retrieve xml from the backend service for company: $requestId');
-    return Response.notFound('Not Found');
-  }
-
-  final xmlstring = backendResponse.body;
-  final doc = XmlDocument.parse(xmlstring);
-
-  try {
-    final responseObject = JsonEncoder.withIndent('  ').convert({
-      'id': doc.xpath('/Data/id').first.innerText,
-      'name': doc.xpath('/Data/name').first.innerText,
-      'description': doc.xpath('/Data/description').first.innerText,
-    });
-
-    return Response.ok(responseObject, headers: {'content-type': 'application/json'});
-  } catch (ex) {
-    print('Invalid response from the backend servcie, requestId: $requestId, error: $ex, response: $xmlstring');
-    return Response.notFound('Not Found');
+    print('Error handling request for requestId: $requestId, error: $ex');
+    return Response.notFound('{"error":"not_found","error_description":"The requested resource was not found on the backend service"}',
+        headers: {'content-type': 'application/json'});
   }
 }

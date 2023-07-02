@@ -20,14 +20,9 @@ To run the server:
 
 ## Things worth considering.
 
+Performance/reliability
+ - No experience with how performant or reliable Dart is in this style of application.
+
 Tests
  - The included tests are some minimal integration tests. These should really use a mocked backend service. 
- - Adding some unit tests would require spreading the handler implementaion across some small testable functions.
-
-
-    
-    
-
-
-
-
+ - Adding unit tests would require separating the handler implementaion across some small testable functions/classes.

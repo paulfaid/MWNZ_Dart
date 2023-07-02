@@ -41,7 +41,7 @@ void main() {
     await executeAgainstServer((host) async {
       final response = await get(Uri.parse('$host/v1/companies/0'));
       expect(response.statusCode, 404);
-      expect(response.body, contains('Not Found'));
+      expect(response.body, contains('not_found'));
     });
   });
 }
